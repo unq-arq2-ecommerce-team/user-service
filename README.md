@@ -1,6 +1,4 @@
-# Arquitectura de Software 2 - Universidad Nacional de Quilmes
-
-[Enunciado del Trabajo Práctico](https://github.com/cassa10/arq2-tp1/blob/main/doc/Arq2%20-%20Trabajo%20pr%C3%A1ctico.pdf)
+# users-service
 
 ## Tecnologías:
 
@@ -68,7 +66,7 @@ http://localhost:<port>/docs/index.html
 2) Construir el Dockerfile (imagen) del servicio
 
 ```
-docker build -t arq2-tp1 .
+docker build -t users-service .
 ```
 
 3) Ejecutar la imagen construida
@@ -77,24 +75,29 @@ Importante: Se requiere configurar env var "MONGO_URI" dentro de ./resources/loc
 
 database = "arq-soft-2-meli"
 
+collections:
+ - "counters" (objeto que cuenta con la info de los ids a consumir)
+ - "products" 
+ - "orders"
+
 Nota: Pedir credenciales por privado.
 
 Tambien, si se desea se puede cambiar las envs por otras de las que estan. Se recomienda utilizar el mismo puerto externo e interno para que funcione correctamente swagger.
 
 ```
-docker run -p <port>:8080 --env-file ./resources/local.env --name arq2-tp1 arq2-tp1
+docker run -p <port>:8080 --env-file ./resources/local.env --name users-service users-service
 ```
 
 Nota: agregar "-d" si se quiere ejecutar como deamon
 
 ```
-docker run -d -p <port>:8080 --env-file ./resources/local.env --name arq2-tp1 arq2-tp1
+docker run -d -p <port>:8080 --env-file ./resources/local.env --name users-service users-service
 ```
 
 Ejemplo:
 
 ```
-docker run -d -p 8080:8080 --env-file ./resources/local.env --name arq2-tp1 arq2-tp1
+docker run -d -p 8080:8080 --env-file ./resources/local.env --name users-service users-service
 ```
 
 4) En un browser, abrir swagger del servicio en el siguiente url:

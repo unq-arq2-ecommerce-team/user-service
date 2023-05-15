@@ -85,19 +85,19 @@ Nota: Pedir credenciales por privado.
 Tambien, si se desea se puede cambiar las envs por otras de las que estan. Se recomienda utilizar el mismo puerto externo e interno para que funcione correctamente swagger.
 
 ```
-docker run -p <port>:8080 --env-file ./resources/local.env --name users-service users-service
+docker run -p <port>:8081 --env-file ./resources/local.env --name users-service users-service
 ```
 
 Nota: agregar "-d" si se quiere ejecutar como deamon
 
 ```
-docker run -d -p <port>:8080 --env-file ./resources/local.env --name users-service users-service
+docker run -d -p <port>:8081 --env-file ./resources/local.env --name users-service users-service
 ```
 
 Ejemplo:
 
 ```
-docker run -d -p 8080:8080 --env-file ./resources/local.env --name users-service users-service
+docker run -d -p 8081:8081 --env-file ./resources/local.env --name users-service users-service
 ```
 
 4) En un browser, abrir swagger del servicio en el siguiente url:
@@ -106,7 +106,7 @@ docker run -d -p 8080:8080 --env-file ./resources/local.env --name users-service
 
 Segun el ejemplo:
 
-`http://localhost:8080/docs/index.html`
+`http://localhost:8081/docs/index.html`
 
 5) Probar el endpoint health check y debe retornar ok
 

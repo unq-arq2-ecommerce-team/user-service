@@ -3,10 +3,10 @@ package query
 import (
 	"context"
 	"fmt"
-	"github.com/cassa10/arq2-tp1/src/domain/mock"
-	"github.com/cassa10/arq2-tp1/src/domain/model"
-	"github.com/cassa10/arq2-tp1/src/domain/model/exception"
 	"github.com/stretchr/testify/assert"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/mock"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model/exception"
 	"testing"
 )
 
@@ -17,12 +17,7 @@ func Test_GivenFindSellerByIdQueryAndSellerThatExistWithSomeId_WhenDoWithSameId_
 	sellerToFind := &model.Seller{
 		Id: sellerIdToFind,
 	}
-	sellerProducts := []model.Product{{
-		Id:       1,
-		SellerId: sellerIdToFind,
-	}}
 	mocks.SellerRepo.EXPECT().FindById(ctx, sellerIdToFind).Return(sellerToFind, nil)
-	mocks.ProductRepo.EXPECT().FindAllBySellerId(ctx, sellerIdToFind).Return(sellerProducts, nil)
 	seller, err := findSellerById.Do(ctx, sellerIdToFind)
 
 	assert.Equal(t, sellerToFind, seller)
@@ -54,24 +49,7 @@ func Test_GivenFindSellerByIdQuery_WhenDoWithIdThatNotExists_ThenReturnNoSellerA
 	assert.ErrorIs(t, err, exception.SellerNotFound{Id: sellerIdToFind})
 }
 
-func Test_GivenFindSellerByIdQueryAndErrorInGetSellerProducts_WhenDoWithId_ThenReturnNoSellerAndAnUnexpectedError(t *testing.T) {
-	findSellerById, mocks := setUpFindSellerById(t)
-	ctx := context.Background()
-	sellerIdToFind := int64(4)
-	sellerToFind := &model.Seller{
-		Id: sellerIdToFind,
-	}
-	errMsg := "unexpected error"
-	mocks.SellerRepo.EXPECT().FindById(ctx, sellerIdToFind).Return(sellerToFind, nil)
-	mocks.ProductRepo.EXPECT().FindAllBySellerId(ctx, sellerIdToFind).Return(nil, fmt.Errorf(errMsg))
-
-	seller, err := findSellerById.Do(ctx, sellerIdToFind)
-
-	assert.Nil(t, seller)
-	assert.EqualError(t, err, errMsg)
-}
-
 func setUpFindSellerById(t *testing.T) (*FindSellerById, *mock.InterfaceMocks) {
 	mocks := mock.NewInterfaceMocks(t)
-	return NewFindSellerById(mocks.SellerRepo, mocks.ProductRepo), mocks
+	return NewFindSellerById(mocks.SellerRepo), mocks
 }

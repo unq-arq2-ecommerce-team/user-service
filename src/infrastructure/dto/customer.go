@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/cassa10/arq2-tp1/src/domain/model"
+import "github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
 
 type CustomerCreateReq struct {
 	Firstname string `json:"firstname" binding:"required"`

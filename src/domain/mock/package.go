@@ -9,8 +9,6 @@ type InterfaceMocks struct {
 	Logger       *MockLogger
 	CustomerRepo *MockCustomerRepository
 	SellerRepo   *MockSellerRepository
-	ProductRepo  *MockProductRepository
-	OrderRepo    *MockOrderRepository
 }
 
 // NewInterfaceMocks create an *InterfaceMocks with their mocked interfaces initialized
@@ -23,8 +21,6 @@ func NewInterfaceMocks(t *testing.T) *InterfaceMocks {
 		Logger:       baseLogger,
 		CustomerRepo: NewMockCustomerRepository(ctrl),
 		SellerRepo:   NewMockSellerRepository(ctrl),
-		ProductRepo:  NewMockProductRepository(ctrl),
-		OrderRepo:    NewMockOrderRepository(ctrl),
 	}
 }
 

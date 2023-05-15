@@ -5,10 +5,11 @@
 package mock
 
 import (
+	context "context"
 	reflect "reflect"
 
-	model "github.com/cassa10/arq2-tp1/src/domain/model"
 	gomock "github.com/golang/mock/gomock"
+	model "github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
 )
 
 // MockLogger is a mock of Logger interface.
@@ -277,4 +278,18 @@ func (m *MockLogger) WithFields(arg0 map[string]interface{}) model.Logger {
 func (mr *MockLoggerMockRecorder) WithFields(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithFields", reflect.TypeOf((*MockLogger)(nil).WithFields), arg0)
+}
+
+// WithRequestId mocks base method.
+func (m *MockLogger) WithRequestId(arg0 context.Context) model.Logger {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WithRequestId", arg0)
+	ret0, _ := ret[0].(model.Logger)
+	return ret0
+}
+
+// WithRequestId indicates an expected call of WithRequestId.
+func (mr *MockLoggerMockRecorder) WithRequestId(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithRequestId", reflect.TypeOf((*MockLogger)(nil).WithRequestId), arg0)
 }

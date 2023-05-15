@@ -2,9 +2,9 @@ package mongo
 
 import (
 	"context"
-	"github.com/cassa10/arq2-tp1/src/domain/model"
-	"github.com/cassa10/arq2-tp1/src/infrastructure/dto"
-	"github.com/cassa10/arq2-tp1/src/infrastructure/logger"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/dto"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,7 +15,7 @@ import (
 const counterCollection = "counters"
 
 // getNextId log errors
-func getNextId(parentCtx context.Context, baseLogger model.Logger, db *mongo.Database, timeoutDuration time.Duration, collection string) (int64, error) {
+func getNextId(parentCtx context.Context, baseLogger model.Logger, db *mongo.Database, _ time.Duration, collection string) (int64, error) {
 	log := baseLogger.WithFields(logger.Fields{"method": "getNextId", "collection of _id": collection})
 	opts := options.RunCmd().SetReadPreference(readpref.Primary())
 	command := bson.D{

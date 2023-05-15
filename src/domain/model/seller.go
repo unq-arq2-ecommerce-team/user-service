@@ -2,14 +2,13 @@ package model
 
 import (
 	"context"
-	"github.com/cassa10/arq2-tp1/src/domain/util"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/util"
 )
 
 type Seller struct {
-	Id       int64     `json:"id" bson:"_id" binding:"required"`
-	Name     string    `json:"name" bson:"name" binding:"required"`
-	Email    string    `json:"email" bson:"email" binding:"required,email"`
-	Products []Product `json:"products" bson:"-"`
+	Id    int64  `json:"id" bson:"_id" binding:"required"`
+	Name  string `json:"name" bson:"name" binding:"required"`
+	Email string `json:"email" bson:"email" binding:"required,email"`
 }
 
 func (s *Seller) Merge(updateSeller UpdateSeller) {

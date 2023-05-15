@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	model "github.com/cassa10/arq2-tp1/src/domain/model"
 	gomock "github.com/golang/mock/gomock"
+	model "github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
 )
 
 // MockSellerRepository is a mock of SellerRepository interface.

@@ -77,8 +77,8 @@ database = "arq-soft-2-meli"
 
 collections:
  - "counters" (objeto que cuenta con la info de los ids a consumir)
- - "products" 
- - "orders"
+ - "customers" 
+ - "sellers"
 
 Nota: Pedir credenciales por privado.
 

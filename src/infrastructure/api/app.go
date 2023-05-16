@@ -9,6 +9,7 @@ import (
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/action/command"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/action/query"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
+	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/api/middleware"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/api/v1"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/config"
 	"io"
@@ -67,6 +68,7 @@ func (app *application) Run() error {
 	router.GET("/", HealthCheck)
 
 	rv1 := router.Group("/api/v1")
+	rv1.Use(middleware.TracingRequestId())
 	{
 		rv1Customer := rv1.Group("/customer")
 		rv1Customer.POST("", v1.CreateCustomerHandler(app.logger, app.CreateCustomerCmd))

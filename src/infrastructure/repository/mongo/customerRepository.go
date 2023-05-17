@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model/exception"
-	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -22,7 +21,7 @@ type customerRepository struct {
 
 func NewCustomerRepository(baseLogger model.Logger, db *mongo.Database, timeout time.Duration) model.CustomerRepository {
 	repo := &customerRepository{
-		logger:  baseLogger.WithFields(logger.Fields{"logger": "mongo.CustomerRepository", "customerCollection": customerCollection}),
+		logger:  baseLogger.WithFields(model.LoggerFields{"logger": "mongo.CustomerRepository", "customerCollection": customerCollection}),
 		db:      db,
 		timeout: timeout,
 	}
@@ -31,7 +30,7 @@ func NewCustomerRepository(baseLogger model.Logger, db *mongo.Database, timeout 
 }
 
 func (r *customerRepository) FindById(ctx context.Context, id int64) (*model.Customer, error) {
-	log := r.logger.WithFields(logger.Fields{"method": "FindById", "id": id})
+	log := r.logger.WithFields(model.LoggerFields{"method": "FindById", "id": id})
 	filter := bson.M{"_id": id}
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
@@ -40,14 +39,14 @@ func (r *customerRepository) FindById(ctx context.Context, id int64) (*model.Cus
 		if err == mongo.ErrNoDocuments {
 			return nil, exception.CustomerNotFound{Id: id}
 		}
-		log.WithFields(logger.Fields{"err": err}).Errorf(fmt.Sprintf("couldn't retrieve documents with filter %s", filter))
+		log.WithFields(model.LoggerFields{"err": err}).Errorf(fmt.Sprintf("couldn't retrieve documents with filter %s", filter))
 		return nil, err
 	}
 	return &customer, nil
 }
 
 func (r *customerRepository) FindByEmail(ctx context.Context, email string) (*model.Customer, error) {
-	log := r.logger.WithFields(logger.Fields{"method": "FindByEmail", "email": email})
+	log := r.logger.WithFields(model.LoggerFields{"method": "FindByEmail", "email": email})
 	filter := bson.M{"email": email}
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
@@ -56,14 +55,14 @@ func (r *customerRepository) FindByEmail(ctx context.Context, email string) (*mo
 		if err == mongo.ErrNoDocuments {
 			return nil, exception.CustomerNotFound{Email: email}
 		}
-		log.WithFields(logger.Fields{"err": err}).Errorf(fmt.Sprintf("couldn't retrieve documents with filter %s", filter))
+		log.WithFields(model.LoggerFields{"err": err}).Errorf(fmt.Sprintf("couldn't retrieve documents with filter %s", filter))
 		return nil, err
 	}
 	return &customer, nil
 }
 
 func (r *customerRepository) Create(ctx context.Context, customer model.Customer) (int64, error) {
-	log := r.logger.WithFields(logger.Fields{"method": "Create"})
+	log := r.logger.WithFields(model.LoggerFields{"method": "Create"})
 	_, err := r.FindByEmail(ctx, customer.Email)
 	if _, customerNotExist := err.(exception.CustomerNotFound); !customerNotExist {
 		log.Infof("customer already exist")
@@ -78,13 +77,13 @@ func (r *customerRepository) Create(ctx context.Context, customer model.Customer
 	}
 	customer.Id = customerId
 
-	log = log.WithFields(logger.Fields{"customer": customer})
+	log = log.WithFields(model.LoggerFields{"customer": customer})
 	if _, err := r.db.Collection(customerCollection).InsertOne(timeoutCtx, customer); err != nil {
 		if mongo.IsDuplicateKeyError(err) {
 			log.Infof("customer already exist")
 			return 0, exception.CustomerAlreadyExist{Email: customer.Email}
 		}
-		log.WithFields(logger.Fields{"err": err}).Error("couldn't create customer")
+		log.WithFields(model.LoggerFields{"err": err}).Error("couldn't create customer")
 		return 0, err
 	}
 	log.Info("customer created successfully")
@@ -92,7 +91,7 @@ func (r *customerRepository) Create(ctx context.Context, customer model.Customer
 }
 
 func (r *customerRepository) Update(ctx context.Context, customer model.Customer) (bool, error) {
-	log := r.logger.WithFields(logger.Fields{"method": "Update", "customerToUpdate": customer})
+	log := r.logger.WithFields(model.LoggerFields{"method": "Update", "customerToUpdate": customer})
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
 	updateRes, err := r.db.Collection(customerCollection).UpdateByID(timeout, customer.Id, bson.M{"$set": customer})
@@ -101,7 +100,7 @@ func (r *customerRepository) Update(ctx context.Context, customer model.Customer
 			log.Infof("customer with new email already exist")
 			return false, exception.CustomerAlreadyExist{Email: customer.Email}
 		}
-		log.WithFields(logger.Fields{"error": err}).Error("error when update customer")
+		log.WithFields(model.LoggerFields{"error": err}).Error("error when update customer")
 		return false, err
 	}
 	if updateRes.ModifiedCount == 0 {
@@ -113,12 +112,12 @@ func (r *customerRepository) Update(ctx context.Context, customer model.Customer
 }
 
 func (r *customerRepository) Delete(ctx context.Context, id int64) (bool, error) {
-	log := r.logger.WithFields(logger.Fields{"method": "Delete", "customerId": id})
+	log := r.logger.WithFields(model.LoggerFields{"method": "Delete", "customerId": id})
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
 	deleteRes, err := r.db.Collection(customerCollection).DeleteOne(timeout, bson.M{"_id": id})
 	if err != nil {
-		log.WithFields(logger.Fields{"error": err}).Errorf("error when delete customer with id %v", id)
+		log.WithFields(model.LoggerFields{"error": err}).Errorf("error when delete customer with id %v", id)
 		return false, err
 	}
 	if deleteRes.DeletedCount == 0 {
@@ -138,7 +137,7 @@ func (r *customerRepository) createIndex(ctx context.Context) {
 	}
 	_, err := r.db.Collection(customerCollection).Indexes().CreateOne(timeout, index)
 	if err != nil {
-		r.logger.WithFields(logger.Fields{"error": err}).Fatalf("could not create mongo index")
+		r.logger.WithFields(model.LoggerFields{"error": err}).Fatalf("could not create mongo index")
 	} else {
 		r.logger.Infof("mongo index created")
 	}

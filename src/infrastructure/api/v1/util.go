@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/dto"
-	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/logger"
 	"net/http"
 	"strconv"
 )
@@ -20,7 +19,7 @@ func parsePathParamPositiveIntId(c *gin.Context, paramKey string) (int64, error)
 }
 
 func defaultInternalServerError(log model.Logger, ginContext *gin.Context, additionalLogInfo string, err error) {
-	log.WithFields(logger.Fields{"error": err}).Error(additionalLogInfo)
+	log.WithFields(model.LoggerFields{"error": err}).Error(additionalLogInfo)
 	_writeJsonErrorMessageWithDesc(ginContext, http.StatusInternalServerError, "internal server error", "")
 }
 

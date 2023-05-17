@@ -5,7 +5,6 @@ import (
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/action/command"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model"
 	"github.com/unq-arq2-ecommerce-team/users-service/src/domain/model/exception"
-	"github.com/unq-arq2-ecommerce-team/users-service/src/infrastructure/logger"
 	"net/http"
 )
 
@@ -25,7 +24,7 @@ func UpdateCustomerHandler(log model.Logger, updateCustomerCmd *command.UpdateCu
 	return func(c *gin.Context) {
 		id, err := parsePathParamPositiveIntId(c, "customerId")
 		if err != nil {
-			log.WithFields(logger.Fields{"error": err}).Error("invalid path param")
+			log.WithFields(model.LoggerFields{"error": err}).Error("invalid path param")
 			writeJsonErrorMessageWithNoDesc(c, http.StatusBadRequest, err)
 			return
 		}

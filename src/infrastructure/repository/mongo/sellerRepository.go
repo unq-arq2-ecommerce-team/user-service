@@ -30,7 +30,7 @@ func NewSellerRepository(baseLogger model.Logger, db *mongo.Database, timeout ti
 }
 
 func (r *sellerRepository) FindById(ctx context.Context, id int64) (*model.Seller, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "FindById", "id": id})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "FindById", "id": id})
 	filter := bson.M{"_id": id}
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
@@ -46,7 +46,7 @@ func (r *sellerRepository) FindById(ctx context.Context, id int64) (*model.Selle
 }
 
 func (r *sellerRepository) FindByName(ctx context.Context, name string) (*model.Seller, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "FindByEmail", "name": name})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "FindByEmail", "name": name})
 	filter := bson.M{"name": name}
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
@@ -62,7 +62,7 @@ func (r *sellerRepository) FindByName(ctx context.Context, name string) (*model.
 }
 
 func (r *sellerRepository) Create(ctx context.Context, seller model.Seller) (int64, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "Create"})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "Create"})
 
 	_, err := r.FindByName(ctx, seller.Name)
 	if _, sellerNotExist := err.(exception.SellerNotFound); !sellerNotExist {
@@ -91,7 +91,7 @@ func (r *sellerRepository) Create(ctx context.Context, seller model.Seller) (int
 }
 
 func (r *sellerRepository) Update(ctx context.Context, seller model.Seller) (bool, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "Update", "sellerToUpdate": seller})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "Update", "sellerToUpdate": seller})
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
 	updateRes, err := r.db.Collection(sellerCollection).UpdateByID(timeout, seller.Id, bson.M{"$set": seller})
@@ -112,7 +112,7 @@ func (r *sellerRepository) Update(ctx context.Context, seller model.Seller) (boo
 }
 
 func (r *sellerRepository) Delete(ctx context.Context, id int64) (bool, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "Delete", "sellerId": id})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "Delete", "sellerId": id})
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
 	deleteRes, err := r.db.Collection(sellerCollection).DeleteOne(timeout, bson.M{"_id": id})

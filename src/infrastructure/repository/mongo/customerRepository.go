@@ -30,7 +30,7 @@ func NewCustomerRepository(baseLogger model.Logger, db *mongo.Database, timeout 
 }
 
 func (r *customerRepository) FindById(ctx context.Context, id int64) (*model.Customer, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "FindById", "id": id})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "FindById", "id": id})
 	filter := bson.M{"_id": id}
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
@@ -46,7 +46,7 @@ func (r *customerRepository) FindById(ctx context.Context, id int64) (*model.Cus
 }
 
 func (r *customerRepository) FindByEmail(ctx context.Context, email string) (*model.Customer, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "FindByEmail", "email": email})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "FindByEmail", "email": email})
 	filter := bson.M{"email": email}
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
@@ -62,7 +62,7 @@ func (r *customerRepository) FindByEmail(ctx context.Context, email string) (*mo
 }
 
 func (r *customerRepository) Create(ctx context.Context, customer model.Customer) (int64, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "Create"})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "Create"})
 	_, err := r.FindByEmail(ctx, customer.Email)
 	if _, customerNotExist := err.(exception.CustomerNotFound); !customerNotExist {
 		log.Infof("customer already exist")
@@ -91,7 +91,7 @@ func (r *customerRepository) Create(ctx context.Context, customer model.Customer
 }
 
 func (r *customerRepository) Update(ctx context.Context, customer model.Customer) (bool, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "Update", "customerToUpdate": customer})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "Update", "customerToUpdate": customer})
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
 	updateRes, err := r.db.Collection(customerCollection).UpdateByID(timeout, customer.Id, bson.M{"$set": customer})
@@ -112,7 +112,7 @@ func (r *customerRepository) Update(ctx context.Context, customer model.Customer
 }
 
 func (r *customerRepository) Delete(ctx context.Context, id int64) (bool, error) {
-	log := r.logger.WithFields(model.LoggerFields{"method": "Delete", "customerId": id})
+	log := r.logger.WithRequestId(ctx).WithFields(model.LoggerFields{"method": "Delete", "customerId": id})
 	timeout, cf := context.WithTimeout(ctx, r.timeout)
 	defer cf()
 	deleteRes, err := r.db.Collection(customerCollection).DeleteOne(timeout, bson.M{"_id": id})
